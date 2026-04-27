@@ -1,63 +1,49 @@
 
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-public class SistemaAtencionClinica {
-    private final PriorityQueue<Paciente> colaPacientes;
-    private final int capacidadMaxima = 12;
+public class Paciente implements Comparable<Paciente> {
+    private String codigo;
+    private String nombre;
+    private int prioridad;
 
-    public SistemaAtencionClinica() {
-        this.colaPacientes = new PriorityQueue<>();
+    public Paciente(String codigo, String nombre, int prioridad) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.prioridad = prioridad;
     }
 
-    public String registrarPaciente(String codigo, String nombre, int prioridad) {
-        if (codigo == null || codigo.trim().isEmpty()) {
-            return "El código no puede ser nulo o vacío.";
-        }
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return "El nombre no puede ser nulo o vacío.";
-        }
-        if (prioridad < 1 || prioridad > 3) {
-            return "La prioridad debe ser 1, 2 o 3.";
-        }
-        if (colaPacientes.size() >= capacidadMaxima) {
-            return "La sala de espera está llena.";
-        }
-        if (colaPacientes.stream().anyMatch(p -> p.getCodigo().equals(codigo))) {
-            return "Ya existe un paciente con el mismo código.";
-        }
-        colaPacientes.offer(new Paciente(codigo, nombre, prioridad));
-        return "Paciente registrado exitosamente.";
+    public String getCodigo() {
+        return codigo;
     }
 
-    public String verSiguientePaciente() {
-        if (colaPacientes.isEmpty()) {
-            return "No hay pacientes";
-        }
-        return colaPacientes.peek().toString();
+    public String getNombre() {
+        return nombre;
     }
 
-    public String atenderSiguientePaciente() {
-        if (colaPacientes.isEmpty()) {
-            return "No hay pacientes";
-        }
-        return colaPacientes.poll().toString();
+    public int getPrioridad() {
+        return prioridad;
     }
 
-    public int obtenerCantidadPacientes() {
-        return colaPacientes.size();
+    @Override
+    public int compareTo(Paciente otro) {
+        return Integer.compare(this.prioridad, otro.prioridad);
     }
 
-    public int obtenerEspaciosDisponibles() {
-        return capacidadMaxima - colaPacientes.size();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Paciente paciente = (Paciente) o;
+        return Objects.equals(codigo, paciente.codigo);
     }
 
-    public String mostrarColaPrioridad() {
-        if (colaPacientes.isEmpty()) {
-            return "Cola vacía";
-        }
-        return colaPacientes.stream()
-                .map(Paciente::toString)
-                .collect(Collectors.joining("\n"));
+    @Override
+    public int hashCode() {
+        return Objects.hash(codigo);
+    }
+
+    @Override
+    public String toString() {
+        return "Paciente [codigo=" + codigo + ", nombre=" + nombre + ", prioridad=" + prioridad + "]";
     }
 }
